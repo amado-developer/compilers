@@ -1,0 +1,10 @@
+class Test {
+    copy() : SELF_TYPE { self };
+};
+
+class Test2 inherits Test { };
+
+class Main {
+    x : Test2 <- (new Test2).copy();
+    main() : Test2 { x };
+};
