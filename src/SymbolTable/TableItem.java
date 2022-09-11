@@ -63,7 +63,7 @@ public class TableItem {
 
     public int getByteSize(){return byteSize;}
 
-    public void setByteSize(){this.byteSize = byteSize;}
+    public void setByteSize(int byteSize){this.byteSize = byteSize;}
 
     public String getParam_method() {
         return param_method;

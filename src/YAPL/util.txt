@@ -1,0 +1,5 @@
+isTerminalNode= ctx.children.get(4) instanceof TerminalNodeImpl
+
+
+evaluateTerminalChildren =
+for(Parse)

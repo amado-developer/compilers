@@ -1,10 +1,11 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
+
+import SymbolTable.Error;
+import SymbolTable.Errors;
+import YAPL.*;
 import org.antlr.v4.runtime.*;
-import YAPL.YAPLLexer;
-import YAPL.YAPLParser;
-import YAPL.YAPLSintacticErrorListener;
 
 import org.antlr.v4.runtime.misc.Pair;
 
@@ -16,12 +17,10 @@ public class Main {
             File myCode = new File("./pruebas/silly.yapl");
             Scanner scaner = new Scanner(myCode);
             while(scaner.hasNextLine()){
-                //String line = scaner.nextLine();
-               // System.out.println(line);
                 code = code + scaner.nextLine() + "\n";
             }
             scaner.close();
-            System.out.println(code);
+//            System.out.println(code);
         }catch (FileNotFoundException e){
             System.out.println("ERROR");
             e.printStackTrace();
@@ -33,8 +32,25 @@ public class Main {
         parser.removeErrorListeners();
         parser.addErrorListener(YAPLSintacticErrorListener.INSTANCE);
         YAPLParser.ProgramContext tree = parser.program();
-       /// Mensaje texto = new Mensaje()
 
+        if(!Errors.getErrorsInstance().isError){
+            Errors.getErrorsInstance().addCompleted("All good man!");
+            YAPLBaseVisitor a = new YAPLBaseVisitor();
+            YAPLCustomVisitor IronMaiden = new YAPLCustomVisitor<>();
+            String answer = (String) a.visit(tree);
 
+            if(answer.equals("checkType")){
+                Errors.getErrorsInstance().addCompleted("Type insertion worked!");
+            }
+            if(!Errors.getErrorsInstance().isError){
+                String answer2 = (String) IronMaiden.visit(tree);
+                if(answer2.equals("checkType")){
+                    Errors.getErrorsInstance().addCompleted("SIUUUU!");
+                }
+            }
+        }
+        for(Error message : Errors.getErrorsInstance().getErrors()){
+            System.out.println(message.getErrorMessage());
+        }
     }
 }

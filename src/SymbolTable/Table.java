@@ -4,11 +4,11 @@ import java.util.ArrayList;
 
 public class Table {
 
-    String name;
-    ArrayList<TableItem> items;
+    private String name;
+    public ArrayList<TableItem> items;
     public Table(String name) {
-        name = "";
-        items = new ArrayList<>();
+        this.name = "";
+        this.items = new ArrayList<>();
     }
 
     public String getName() {

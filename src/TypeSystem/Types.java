@@ -14,18 +14,16 @@ import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
 public class Types {
     HashMap<Tuple<Integer, Integer>, String> rules;
-    SymbolTable symbolTable;
 
 
 
     public Types() {
         rules = new HashMap<>();
-        symbolTable = new SymbolTable();
     }
 
 
     public String getFather(String clase) {
-        TableItem item = this.symbolTable.get(clase);
+        TableItem item =   SymbolTable.getSymbolTableInstance().get(clase);
         if(!item.getInherits().equals("")){
             return item.getInherits();
         }else {
@@ -60,7 +58,7 @@ public class Types {
 
 
         if(a.getSymbol().getType() == 12){
-            if(this.symbolTable.exists(((TerminalNode)ctx.children.get(1)).getText())){
+            if(  SymbolTable.getSymbolTableInstance().exists(((TerminalNode)ctx.children.get(1)).getText())){
                 return ((TerminalNode)ctx.children.get(1)).getText();
             }else {
                 return "ERROR";
@@ -68,8 +66,8 @@ public class Types {
         //  masdhjg  ((TerminalNode)ctx.children.get(x)).getText();
           //  ((TerminalNode)ctx.children.get(x).get)
         }else if(aa == 44){
-            if(this.symbolTable.exists(((TerminalNode)ctx.children.get(0)).getText())){
-                TableItem element = this.symbolTable.get(((TerminalNode)ctx.children.get(0)).getText());
+            if(  SymbolTable.getSymbolTableInstance().exists(((TerminalNode)ctx.children.get(0)).getText())){
+                TableItem element =   SymbolTable.getSymbolTableInstance().get(((TerminalNode)ctx.children.get(0)).getText());
                 if(element.getSem_kind().equals("attr") || element.getSem_kind().equals("parameter")) {
                     if(ctx.getChildCount() == 1){
                         return element.getTyp();
@@ -132,7 +130,53 @@ public class Types {
         return new Tuple<>(element1, element2);
     }
 
-    //validate feature
+    public String validateFeature(YAPLParser.FeatureContext ctx, ArrayList<String>types){
+        if(Stream.of(types).anyMatch(n -> n.equals("ERROR"))){
+            return "ERROR";
+        }
+        Tuple<Integer, Integer> line = new Tuple<>(ctx.start.getLine(), ctx.start.getCharPositionInLine());
+        if(  SymbolTable.getSymbolTableInstance().exists(ctx.children.get(0).getText())){
+            TableItem featureItem =   SymbolTable.getSymbolTableInstance().get(ctx.children.get(0).getText());
+            if(featureItem.getSem_kind().equals("attr")){
+                if(!  SymbolTable.getSymbolTableInstance().exists(ctx.children.get(0).getText())){
+                    Errors.getErrorsInstance().addError(line,"Type: "+ ((TerminalNode)ctx.children.get(2)).getText() + " doesn't exist");
+                    return "ERROR";
+                }
+                if(ctx.getChildCount() == 3){
+                    return "checkType";
+                }
+                if(!types.get(4).equals(featureItem.getTyp()) && !types.get(4).equals("SELF_TYPE")){
+                    Errors.getErrorsInstance().addError(line,"Variable type: "+ ((TerminalNode)ctx.children.get(4)).getText() +": "+((TerminalNode)ctx.children.get(4)).getText()+ " is not the same type as "+featureItem.getLex()+": "+featureItem.getTyp());
+                    return "ERROR";
+
+                }else{
+                    return "checkType";
+                }
+                
+
+
+            } else if (featureItem.getSem_kind().equals("method")) {
+                if (!ctx.children.get(ctx.children.size()-4).getText().equals("SELF_TYPE") && !  SymbolTable.getSymbolTableInstance().exists(ctx.children.get(ctx.children.size()-4).getText())){
+                    Errors.getErrorsInstance().addError(line,"Method type: "+ ((TerminalNode)ctx.children.get(0)).getText() +": "+((TerminalNode)ctx.children.get(ctx.children.size()-4)).getText()+ " is not declared ");
+                    return "ERROR";
+                }
+                if(types.get(types.size()-2).equals("")){
+                    Errors.getErrorsInstance().addError(line,"no type");
+                    return "ERROR";
+                }
+                if(!types.get(types.size()-2).equals(featureItem.getTyp()) && !types.get(types.size()-2).equals("noType")){
+                    Errors.getErrorsInstance().addError(line,"return type of expression: "+types.get(types.size()-2)+" is not compatible with return type of function "+featureItem.getLex()+": "+featureItem.getTyp());
+                    return "ERROR";
+                }else {
+                    return "checkType";
+                }
+            }
+        }else{
+            Errors.getErrorsInstance().addError(line,"feature: "+ ((TerminalNode)ctx.children.get(0)).getText()+" doesn't exist");
+            return "ERROR";
+        }
+        return null;
+    }
     public String validateExpr(YAPLParser.ExprContext ctx, ArrayList<String> types, ArrayList<Boolean> res){
         Tuple<String, String> tupla = getKeyTuple(ctx, res);
 
@@ -208,7 +252,7 @@ public class Types {
        int aa = a.getSymbol().getType();
        int bb = b.getSymbol().getType();
 
-        if(this.symbolTable.exists(((TerminalNode)ctx.children.get(0)).getText()) && this.symbolTable.exists(ctx.children.get(2).getText())){
+        if(  SymbolTable.getSymbolTableInstance().exists(((TerminalNode)ctx.children.get(0)).getText()) &&   SymbolTable.getSymbolTableInstance().exists(ctx.children.get(2).getText())){
             return "CHECK_TYPE";
         }else {
             Tuple<Integer, Integer> line = new Tuple<>(ctx.start.getLine(), ctx.start.getCharPositionInLine());
@@ -240,7 +284,7 @@ public class Types {
         }
         Tuple<Integer, Integer> line = new Tuple<>(ctx.start.getLine(), ctx.start.getCharPositionInLine());
 
-        if (this.symbolTable.exists(types.get(0)) && this.symbolTable.exists(types.get(2))) {
+        if (  SymbolTable.getSymbolTableInstance().exists(types.get(0)) &&   SymbolTable.getSymbolTableInstance().exists(types.get(2))) {
             if(types.get(0).equals(types.get(2))){
                 return "Bool";
             }else{
@@ -297,8 +341,8 @@ public class Types {
         }
 
         Tuple<Integer, Integer> line = new Tuple<>(ctx.start.getLine(), ctx.start.getCharPositionInLine());
-        if(this.symbolTable.exists(ctx.children.get(0).getText()) && this.symbolTable.exists(types.get(2))){
-            TableItem idItem = this.symbolTable.get(ctx.children.get(0).getText());
+        if(  SymbolTable.getSymbolTableInstance().exists(ctx.children.get(0).getText()) &&   SymbolTable.getSymbolTableInstance().exists(types.get(2))){
+            TableItem idItem =   SymbolTable.getSymbolTableInstance().get(ctx.children.get(0).getText());
 
             if(idItem.getTyp().equals(types.get(2))) {
                 return types.get(2);
@@ -372,8 +416,8 @@ public class Types {
                 }
 
             }else if(bb == 44){
-                if(this.symbolTable.exists(ctx.children.get(i).getText()) && this.symbolTable.exists(ctx.children.get(i + 2).getText())){
-                    currentType = this.symbolTable.get(ctx.children.get(i).getText()).getTyp(); //duda
+                if(  SymbolTable.getSymbolTableInstance().exists(ctx.children.get(i).getText()) &&   SymbolTable.getSymbolTableInstance().exists(ctx.children.get(i + 2).getText())){
+                    currentType =   SymbolTable.getSymbolTableInstance().get(ctx.children.get(i).getText()).getTyp(); //duda
                 }else {
                     Errors.getErrorsInstance().addError(line, ctx.children.get(i).getText() + " or " + ctx.children.get(i + 2).getText() + " doesn't exist");
                     return "ERROR";
@@ -392,8 +436,8 @@ public class Types {
 
         Tuple<Integer, Integer> line = new Tuple<>(ctx.start.getLine(), ctx.start.getCharPositionInLine());
 
-        if(this.symbolTable.exists(ctx.children.get(0).getText())){
-            TableItem elem = this.symbolTable.get(ctx.children.get(0).getText());
+        if(  SymbolTable.getSymbolTableInstance().exists(ctx.children.get(0).getText())){
+            TableItem elem =   SymbolTable.getSymbolTableInstance().get(ctx.children.get(0).getText());
             ArrayList<ParseTree> commas = new ArrayList<>();
 
             for(ParseTree x : ctx.children){
@@ -421,7 +465,7 @@ public class Types {
             }
             int tableIndex = 2;
 
-            Table table = this.symbolTable.getTables().get(this.symbolTable.getTableIndex(elem.getLex()));
+            Table table =   SymbolTable.getSymbolTableInstance().getTables().get(  SymbolTable.getSymbolTableInstance().getTableIndex(elem.getLex()));
             //
 
             for (int i = 0; i < elem.getParam_no()-1; i++) {
@@ -448,11 +492,11 @@ public class Types {
 
         Tuple<Integer, Integer> line = new Tuple<>(ctx.start.getLine(), ctx.start.getCharPositionInLine());
 
-        if(this.symbolTable.exists(types.get(0))){
-            int tableIndex = this.symbolTable.getTableIndex(types.get(0));
-            boolean idExists = this.symbolTable.existInTable(tableIndex,ctx.children.get(2).getText());
+        if(  SymbolTable.getSymbolTableInstance().exists(types.get(0))){
+            int tableIndex =   SymbolTable.getSymbolTableInstance().getTableIndex(types.get(0));
+            boolean idExists =   SymbolTable.getSymbolTableInstance().existInTable(tableIndex,ctx.children.get(2).getText());
             if(idExists){
-                TableItem elem = this.symbolTable.getFromTable(tableIndex,ctx.children.get(2).getText());
+                TableItem elem =   SymbolTable.getSymbolTableInstance().getFromTable(tableIndex,ctx.children.get(2).getText());
                 ArrayList<ParseTree> commas = new ArrayList<>();
                 int paramCount = 0;
 
@@ -476,7 +520,7 @@ public class Types {
                         Errors.getErrorsInstance().addError(line, "the number of parameters doesnt match the number of parameters of method "+elem.getLex());
                         return "ERROR";
                     }
-                    Table table = this.symbolTable.getTables().get(this.symbolTable.getTableIndex(elem.getLex()));
+                    Table table =   SymbolTable.getSymbolTableInstance().getTables().get(  SymbolTable.getSymbolTableInstance().getTableIndex(elem.getLex()));
                     int indx = 4;
 
                 for (int i = 0; i <elem.getParam_no()-1 ; i++) {
@@ -505,11 +549,11 @@ public String exprArroba(YAPLParser.ExprContext ctx,  ArrayList<String> types){
 
     Tuple<Integer, Integer> line = new Tuple<>(ctx.start.getLine(), ctx.start.getCharPositionInLine());
 
-    if(this.symbolTable.exists(types.get(0))&& this.symbolTable.exists(ctx.children.get(2).getText())){
-        int tableIndex = this.symbolTable.getTableIndex(types.get(0));
-        boolean idExists = this.symbolTable.existInTable(tableIndex,ctx.children.get(4).getText());
+    if(  SymbolTable.getSymbolTableInstance().exists(types.get(0))&&   SymbolTable.getSymbolTableInstance().exists(ctx.children.get(2).getText())){
+        int tableIndex =   SymbolTable.getSymbolTableInstance().getTableIndex(types.get(0));
+        boolean idExists =   SymbolTable.getSymbolTableInstance().existInTable(tableIndex,ctx.children.get(4).getText());
         if(idExists){
-            TableItem elem = this.symbolTable.getFromTable(tableIndex,ctx.children.get(4).getText());
+            TableItem elem =   SymbolTable.getSymbolTableInstance().getFromTable(tableIndex,ctx.children.get(4).getText());
             ArrayList<ParseTree> commas = new ArrayList<>();
             int paramCount = 0;
 
@@ -532,7 +576,7 @@ public String exprArroba(YAPLParser.ExprContext ctx,  ArrayList<String> types){
                 Errors.getErrorsInstance().addError(line, "the number of parameters doesnt match the number of parameters of method "+elem.getLex());
                 return "ERROR";
             }
-            Table table = this.symbolTable.getTables().get(this.symbolTable.getTableIndex(elem.getLex()));
+            Table table =   SymbolTable.getSymbolTableInstance().getTables().get(  SymbolTable.getSymbolTableInstance().getTableIndex(elem.getLex()));
             int indx = 6;
             for (int i = 0; i <elem.getParam_no()-1 ; i++) {
                 if(table.getItems().get(i).getTyp() != types.get(indx)){

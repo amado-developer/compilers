@@ -6,7 +6,7 @@ public class Errors {
 
     private static Errors errorsInstance;
 
-    public static Errors getSymbolTableInstance(){
+    public static Errors getErrorsInstance(){
         if(errorsInstance == null) {
             errorsInstance = new Errors();
         }
@@ -25,15 +25,13 @@ public class Errors {
     }
 
     private ArrayList<Error> errors = new ArrayList<>();
-    private boolean isError = false;
+    public boolean isError = false;
 
     public ArrayList<Error> getErrors() {
         return errors;
     }
 
-    public static Errors getErrorsInstance() {
-        return errorsInstance;
-    }
+
 
     public void setError(boolean error) {
         isError = error;
@@ -47,6 +45,10 @@ public class Errors {
         this.isError = true;
         this.errors.add(new Error("error", "Line " + line.getX()
                 + " : " + line.getY()  + "has encountered error: " + errorMessage));
+    }
+
+    public void addCompleted(String message) {
+        this.errors.add(new Error("success", message));
     }
 
     public void addMessage(Tuple<Integer, Integer> line, String errorMessage, String type){
@@ -66,4 +68,6 @@ public class Errors {
     public void deleteErrors() {
         this.errors.clear();
     }
+
+
 }

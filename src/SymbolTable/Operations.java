@@ -1,45 +1,51 @@
 package SymbolTable;
-
-import java.lang.reflect.Array;
+import YAPL.YAPLParser;
+import YAPL.YAPLUtils;
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class Operations {
-    SymbolTable symbolTable;
 
-
-    public Operations(){
-        symbolTable = new SymbolTable();
-    }
-
-    public Tuple<ArrayList<String>, Tuple<Integer, Integer>> getCTX(ParserRuleContext parserRuleContext) {
+    public Tuple<ArrayList<String>, Tuple<Integer, Integer>> getCTX(ParserRuleContext ctx) {
         ArrayList<String> children = new ArrayList<>();
-        ArrayList<ParserRuleContext> ctxChildren = parserRuleContext.children;
+        List<ParseTree> ctxChildren = ctx.children;
 
-        for (int i = 0; i < ctxChildren.size() ; i++) {
-            children.add(ctxChildren[i].getText());
+        for (ParseTree ctxChild : ctxChildren) {
+            children.add(ctxChild.getText());
         }
-
-        Tuple<Integer, Integer> line = new Tuple<>(ctxChildren[0].symbol.line, ctxChildren[0].symbol.column);
+        TerminalNode a = (TerminalNode) ctxChildren.get(0);
+        Tuple<Integer, Integer> line = new Tuple<>(a.getSymbol().getLine(),
+                ((TerminalNode) ctxChildren.get(0)).getSymbol().getCharPositionInLine());
 
         return new Tuple<>(children, line);
     }
 
     public boolean insertSelf(Tuple<Integer, Integer> line) {
-        return symbolTable.addType("self",44,  line,"ref", "attr", symbolTable.getTables()
-                .get(symbolTable.getScopes().get(symbolTable.getScopes().size() - 1)).getName(), 0,
+        return SymbolTable.getSymbolTableInstance()
+                .addType("self",44,  line,"ref", "attr",
+                        SymbolTable.getSymbolTableInstance().getTables()
+                .get(SymbolTable.getSymbolTableInstance().getScopes()
+                        .get(SymbolTable.getSymbolTableInstance().getScopes().size() - 1))
+                                .getName(), 0,
                 0, "");
     }
 
-    public boolean insertClass(YaplParser.ClassContext ctx) {
+    public boolean insertClass(YAPLParser.ClassContext ctx) {
         Tuple<ArrayList<String>, Tuple<Integer, Integer>> childrenLine = getCTX(ctx);
         ArrayList<String> children = childrenLine.getX();
         Tuple<Integer, Integer> line = childrenLine.getY();
-        int index = children.indexOf("inherits");
+
+        int index = YAPLUtils.indx(children, "inherits");
+
         if(index == -1){
-         index = children.indexOf("INHERITS");
-        }else {
-            symbolTable.getErrorMessage().addError(line, "Class " + children.get(1) +
+         index = YAPLUtils.indx(children, "INHERITS");
+        }
+        if(index != -1 && Arrays.asList(new String[]{"Int", "Bool", "String"}).contains(children.get(index + 1))) {
+            Errors.getErrorsInstance().addError(line, "Class " + children.get(1) +
                     " can't inherit from " + children.get(index + 1));
             return false;
         }
@@ -54,11 +60,14 @@ public class Operations {
             }
         }
 
-        return this.symbolTable.addType(children.get(1), ctx.children[1].symbol.type,
-                line, "ref", "class", "", "", "", inherits);
+        List<ParseTree> child = ctx.children;
+        TerminalNode a = (TerminalNode) child.get(1);
+        int aa = a.getSymbol().getType();
+        return SymbolTable.getSymbolTableInstance().addType(children.get(1), aa,
+                line, "ref", "class", "", 0, 0, inherits);
     }
 
-    public boolean insertFeature(YaplParser.FeatureContext ctx) {
+    public boolean insertFeature(YAPLParser.FeatureContext ctx) {
         Tuple<ArrayList<String>, Tuple<Integer, Integer>> childrenLine = getCTX(ctx);
         ArrayList<String> children = childrenLine.getX();
         Tuple<Integer, Integer> line = childrenLine.getY();
@@ -75,7 +84,7 @@ public class Operations {
         int paramNumber = 0;
         if(semKind.equals("method")) {
             ArrayList<String> filteredList = new ArrayList<>();
-            //TODO meterle la verga a Andre y las funciones en archivo aparte
+
             for (int i = 2; i < children.indexOf(")"); i++) {
                 if(!children.get(i).equals(",")) {
                     filteredList.add(children.get(i));
@@ -89,22 +98,30 @@ public class Operations {
         if(!children.get(index + 1).equals("SELF_TYPE")) {
             type = children.get(index + 1);
         }else {
-            type = symbolTable.getTables().get(symbolTable.getScopes().get(symbolTable.getScopes().size() - 1)).getName();
+            type = SymbolTable.getSymbolTableInstance().getTables()
+                    .get(SymbolTable.getSymbolTableInstance().getScopes()
+                            .get(SymbolTable.getSymbolTableInstance().getScopes().size() - 1)).getName();
         }
-        return this.symbolTable.addType(children.get(0), ctx.children[0].symbol.type,
+        List<ParseTree> child = ctx.children;
+        TerminalNode a = (TerminalNode) child.get(0);
+        int aa = a.getSymbol().getType();
+        return SymbolTable.getSymbolTableInstance().addType(children.get(0), aa,
                 line, "ref", semKind, type, paramNumber, 0, "");
     }
 
-    public boolean insertFormal(YaplParser.FormalContext ctx) {
+    public boolean insertFormal(YAPLParser.FormalContext ctx) {
         Tuple<ArrayList<String>, Tuple<Integer, Integer>> childrenLine = getCTX(ctx);
         ArrayList<String> children = childrenLine.getX();
         Tuple<Integer, Integer> line = childrenLine.getY();
-
-        return this.symbolTable.addType(children.get(0), ctx.children[0].symbol.type,
+        List<ParseTree> child = ctx.children;
+        TerminalNode a = (TerminalNode) child.get(0);
+        int aa = a.getSymbol().getType();
+        return SymbolTable.getSymbolTableInstance().addType(children.get(0), aa,
                 line, "ref", "parameter", children.get(2), 0, 0, "");
     }
 
-    public boolean insertExpr(YaplParser.ExprContext ctx) {
+    // TODO Check scopes and remove getters
+    public boolean insertExpr(YAPLParser.ExprContext ctx) {
         Tuple<ArrayList<String>, Tuple<Integer, Integer>> childrenLine = getCTX(ctx);
         ArrayList<String> children = childrenLine.getX();
         Tuple<Integer, Integer> line = childrenLine.getY();
@@ -120,12 +137,17 @@ public class Operations {
             paramNum = filteredList.size();
         }
 
-        boolean inserted = this.symbolTable.addType("let" + symbolTable.letsCounter, ctx.children[1].symbol.type,
+        List<ParseTree> child = ctx.children;
+        TerminalNode a = (TerminalNode) child.get(1);
+        int aa = a.getSymbol().getType();
+        boolean inserted =SymbolTable.getSymbolTableInstance()
+                .addType("let" + SymbolTable.getSymbolTableInstance().letsCounter, aa,
                 line, "", "expr", children.get(2), paramNum, 0, "");
 
         if(inserted){
-            symbolTable.pushToScope("let" + symbolTable.letsCounter);
-            symbolTable.letsCounter += 1;
+            SymbolTable.getSymbolTableInstance()
+                    .pushToScope("let" + SymbolTable.getSymbolTableInstance().letsCounter);
+            SymbolTable.getSymbolTableInstance().letsCounter += 1;
 
             ArrayList<Integer> indexes = new ArrayList<>();
 
@@ -136,13 +158,25 @@ public class Operations {
             }
 
             for(int i : indexes){
-                this.symbolTable.addType(children.get(i - 1), ctx.children[i - 1].symbol.type,
+                List<ParseTree> hijo = ctx.children;
+                TerminalNode ah = (TerminalNode) hijo.get(i - 1);
+
+                int aah = ah.getSymbol().getType();
+                SymbolTable.getSymbolTableInstance().addType(children.get(i - 1),  aah,
                         line, "ref", "attr", children.get(i + 1), 0, 0, "");
             }
 
-            this.symbolTable.getScopes().remove(this.symbolTable.getScopes().size() - 1);
+            SymbolTable.getSymbolTableInstance().scopes
+                    .remove(SymbolTable.getSymbolTableInstance().getScopes().size() - 1);
         }
 
         return inserted;
     }
+
+//    public boolean insertObj(YAPLParser.ExprContext ctx) {
+//        Tuple<ArrayList<String>, Tuple<Integer, Integer>> ª = this.getCTX(ctx);
+//        if(this.symbolTable.existInTable(0, ª.getX().get(1))){
+//            TableItem tableItem = new TableItem("obj" + this.symbolTable.objectsCounter, ctx.children.get(1).symbo.type, )
+//        }
+//    }
 }
