@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ANTLRGenerationPreferences">
+    <option name="perGrammarGenerationSettings">
+      <list>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/Query.g4" />
+          <option name="autoGen" value="true" />
+          <option name="outputDir" value="yapl" />
+          <option name="libDir" value="C:\Users\massa\Documents\Universidad\quinto año\Segundo semestre\Compiladores\newBeggining" />
+          <option name="encoding" value="" />
+          <option name="pkg" value="" />
+          <option name="language" value="Python3" />
+          <option name="generateVisitor" value="true" />
+        </PerGrammarGenerationSettings>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/MyGrammar.g4" />
+          <option name="autoGen" value="true" />
+          <option name="outputDir" value="yapl" />
+          <option name="libDir" value="C:\Users\massa\Documents\Universidad\quinto año\Segundo semestre\Compiladores\newBeggining" />
+          <option name="encoding" value="" />
+          <option name="pkg" value="" />
+          <option name="language" value="Python3" />
+          <option name="generateVisitor" value="true" />
+        </PerGrammarGenerationSettings>
+      </list>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.9" project-jdk-type="Python SDK" />
+</project>

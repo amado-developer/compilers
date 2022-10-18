@@ -12,13 +12,19 @@ class ScopeSymbolTable:
     #representa como cadena la tabla de simbolos
     def __str__(self):
         ret = "ScopeSymbolTable(%s) - level: %d\n" % (self.name, self.level)
-        ret += "lexema \t semantica \t\t linea \t\t columna"+"\n"
+        ret += "lexema \t semantica \t\t linea \t\t columna"+ "\t\t tipo"+ "\t\t posicion"+ "\t\t herencia"+ "\n"
         keys = self.symbols.keys()
         for key in keys:
-            ret += "%s \t\t %s\n" % (key, self.symbols[key])
+            if(self.symbols[key][3] == ""):
+                ret += "%s \t\t %s \t\t %s \t\t\t  %s \t\t\t\t %s \t\t\t %s \t\t\t %s   \n" % (
+                key, self.symbols[key][0], self.symbols[key][1], self.symbols[key][2], self.symbols[key][3],
+                self.symbols[key][4], self.symbols[key][5])
+            else:
+                ret += "%s \t\t %s \t\t %s \t\t\t  %s \t\t\t %s \t\t %s \t\t\t\t %s   \n" % (key, self.symbols[key][0],self.symbols[key][1],self.symbols[key][2],self.symbols[key][3],
+                                                                                             self.symbols[key][4],self.symbols[key][5])
         return ret
     #insertar elemento
-    #lexema , semantica, linea, columna, tipo, herencia
+    # lexema , semantica, linea, columna, tipo,  posicion, herencia
     def insert(self, name, symbol):
         self.symbols[name] = symbol
     #funcion para encontrar elemento
@@ -53,13 +59,15 @@ class ScopeSymbolTable:
 
 st = ScopeSymbolTable("global")
 
-
+"""
 st.insert("a", [1,2,3])
 st.insert("b", 2)
 st.insert("c", 3)
-st.insert("a", 4)
+"""
+#get value inside list
+#st.symbols.get("a")[0]
 
-print(st)
+#print(st.symbols.get("a")[0])
 
 
 
