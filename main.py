@@ -1,5 +1,7 @@
 import sys
 from antlr4 import *
+
+import Constants
 from yapl import *
 from yapl.MyGrammarErrorListener import MyGrammarErrorListener
 
@@ -8,7 +10,10 @@ from yapl.MyGrammarListener import MyGrammarListener
 from yapl.MyGrammarParser import MyGrammarParser
 from SymbolTable import st
 from Errors import ett
+
+
 def main(argv):
+    print(Constants.tokens)
     file = open("./silly.yapl")
     code = ""
     for x in file:
@@ -24,8 +29,9 @@ def main(argv):
     walker = ParseTreeWalker()
     walker.walk(MyGrammarListener(), tree)
     print(st)
-    if(ett.getError() == ""):
+    if ett.getError() == "":
         print("No errors found")
+
 
 if __name__ == '__main__':
     main(sys.argv)
