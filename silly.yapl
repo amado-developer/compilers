@@ -4,10 +4,6 @@ class Silly {
 
 class Sally inherits Silly { };
 
-class Silly {
-    copy() : SELF_TYPE { self };
-};
-
 class Main {
     x : Silly <- (new Silly).copy();
     x2: Sally;

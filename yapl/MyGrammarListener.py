@@ -5,6 +5,7 @@ if __name__ is not None and "." in __name__:
 else:
     from MyGrammarParser import MyGrammarParser
 
+from Errors import ett
 from SymbolTable import st
 #tabla de simbolos
 #lexema , semantica, linea, columna, tipo,  posicion, herencia,
@@ -25,7 +26,9 @@ class MyGrammarListener(ParseTreeListener):
     # Exit a parse tree produced by MyGrammarParser#program.
     def exitProgram(self, ctx:MyGrammarParser.ProgramContext):
         #print("hola desde EXIT PROGRAM: ", self.ant)
-
+        if "Main" not in st.symbols.keys():
+            print("ERROR: Class Main does not exist")
+            ett.addError("ERROR: Class Main does not exist")
         pass
 
 
@@ -42,6 +45,8 @@ class MyGrammarListener(ParseTreeListener):
         if lex in st.symbols.keys():
             clean_error = False
             print("ERROR: Class "+lex+ " already exists in line "+str(line)+" column "+str(column))
+            ett.addError("ERROR: Class "+lex+ " already exists in line "+str(line)+" column "+str(column))
+
         #inherits
         for i in ctx.children:
             if i.getText() == "inherits":
@@ -60,10 +65,6 @@ class MyGrammarListener(ParseTreeListener):
 
     # Exit a parse tree produced by MyGrammarParser#class.
     def exitClass(self, ctx:MyGrammarParser.ClassContext):
-        #print(ctx.getText())
-        # check main existance
-        #if ctx.children[1].getText() != "Main":
-            #print("ERROR: main class not found")
 
         pass
 
