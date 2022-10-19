@@ -51,11 +51,17 @@ class MyGrammarListener(ParseTreeListener):
         for i in ctx.children:
             if i.getText() == "inherits":
                 inherits = ctx.children[ctx.children.index(i)+1].getText()
+                if inherits not in st.symbols.keys():
+                    clean_error = False
+                    print("ERROR: Class "+inherits+ " does not exist in line "+str(line)+" column "+str(column))
+                    ett.addError("ERROR: Class "+inherits+ " does not exist in line "+str(line)+" column "+str(column))
+                if inherits == lex:
+                    clean_error = False
+                    print("ERROR: Class "+lex+ " cannot inherit from itself in line "+str(line)+" column "+str(column))
+                    ett.addError("ERROR: Class "+lex+ " cannot inherit from itself in line "+str(line)+" column "+str(column))
                 break
-        try:
-            pass
-        except:
-            pass
+
+
 
         if clean_error:
             st.insert(lex, [token, line, column, "",0,inherits])
@@ -72,6 +78,7 @@ class MyGrammarListener(ParseTreeListener):
     # Enter a parse tree produced by MyGrammarParser#feature.
     def enterFeature(self, ctx:MyGrammarParser.FeatureContext):
         self.ant += 1
+
         ##print("hola desde enter feature: ", self.ant)
         pass
 
