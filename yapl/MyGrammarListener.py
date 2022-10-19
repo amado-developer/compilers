@@ -1,5 +1,8 @@
-# Generated from C:/Users/massa/Documents/Universidad/quinto año/Segundo semestre/Compiladores/newBeggining\MyGrammar.g4 by ANTLR 4.10.1
+# Generated from C:/Users/massa/Documents/Universidad/quinto aï¿½o/Segundo semestre/Compiladores/newBeggining\MyGrammar.g4 by ANTLR 4.10.1
 from antlr4 import *
+
+import Constants
+from TypeSystem import type_system
 if __name__ is not None and "." in __name__:
     from .MyGrammarParser import MyGrammarParser
 else:
@@ -46,6 +49,7 @@ class MyGrammarListener(ParseTreeListener):
 
         self.ant +=1
 
+
         #print("hola desde enter program: ", self.ant)
         pass
 
@@ -60,13 +64,14 @@ class MyGrammarListener(ParseTreeListener):
 
     # Enter a parse tree produced by MyGrammarParser#class.
     def enterClass(self, ctx:MyGrammarParser.ClassContext):
-        #insertar clase
+        type_system.test_type(ctx)
         self.ant += 1
         self.propiedad = "class"
         lex = ctx.children[1].symbol.text
         token = ctx.children[1].symbol.type
         line = ctx.children[0].getSymbol().line
         column = ctx.children[0].getSymbol().column
+        element_type = Constants.tokens[ctx.children[0].symbol.type - 1]
         inherits = ""
         clean_error = True
         print("entering class: ", lex)
@@ -98,6 +103,7 @@ class MyGrammarListener(ParseTreeListener):
             if st not in tableList:
                 #print("insertando tabla")
                 tableList.append(st)
+            st.insert(lex, [token, line, column, element_type ,0,inherits])
         #print("hola desde enter class: ", self.ant)
 
         pass
@@ -133,6 +139,7 @@ class MyGrammarListener(ParseTreeListener):
         #print(parentName)
         #print("tabla padre: ",getTable(parentName,tableList))
         #print("feature ID: ", ID)
+        print( Constants.tokens[ctx.children[0].symbol.type - 1])
         self.ant += 1
 
         ##print("hola desde enter feature: ", self.ant)
