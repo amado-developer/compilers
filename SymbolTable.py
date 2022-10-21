@@ -39,6 +39,7 @@ class ScopeSymbolTable:
                 symbol = self.parent.lookup(name)
         return symbol
 
+
     def lookup_current_scope(self, name):
         return self.lookup(name, True)
 
@@ -47,7 +48,10 @@ class ScopeSymbolTable:
 
     def get_children(self):
         return self.children
-
+    def print_children(self):
+        print(len(self.children))
+        for child in self.children:
+            print(child)
     def get_parent(self):
         return self.parent
     #scope

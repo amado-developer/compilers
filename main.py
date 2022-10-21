@@ -10,10 +10,10 @@ from yapl.MyGrammarListener import MyGrammarListener
 from yapl.MyGrammarParser import MyGrammarParser
 from SymbolTable import st
 from Errors import ett
-
+from tableList import *
 
 def main(argv):
-    print(Constants.tokens)
+    #print(Constants.tokens)
     file = open("./silly.yapl")
     code = ""
     for x in file:
@@ -29,6 +29,9 @@ def main(argv):
     walker = ParseTreeWalker()
     walker.walk(MyGrammarListener(), tree)
     print(st)
+    if (st.get_children() != []):
+        st.print_children()
+    print("hola desde table List", tableList[0].name)
     if ett.getError() == "":
         print("No errors found")
 
