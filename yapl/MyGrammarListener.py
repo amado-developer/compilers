@@ -12,12 +12,17 @@ from tableList import *
 #lexema , semantica, linea, columna, tipo,  posicion, herencia,
 
 def getNodeIndex(node):
-    if(node.parent == None or node.parent == None):
+    if(node.parentCtx == None or node == None):
         return -1
-    parent = node .parent
+    parent = node.parentCtx
     for i in range(len(parent.children)):
         if(parent.children[i] == node):
             return i
+def getLeftSibling(node):
+    index = getNodeIndex(node)
+    if(index <1):
+        return None
+    return node.parentCtx.children[index-1]
 def getTable(name,list):
     for x in list:
         #print("tableLiist",x )
@@ -35,6 +40,7 @@ class MyGrammarListener(ParseTreeListener):
     def __init__(self):
         self.ant = 0
         self.lt = None #ultima tabla utilizada
+        self.propiedad = ""
     # Enter a parse tree produced by MyGrammarParser#program.
     def enterProgram(self, ctx:MyGrammarParser.ProgramContext):
 
@@ -54,10 +60,9 @@ class MyGrammarListener(ParseTreeListener):
 
     # Enter a parse tree produced by MyGrammarParser#class.
     def enterClass(self, ctx:MyGrammarParser.ClassContext):
-
-
         #insertar clase
         self.ant += 1
+        self.propiedad = "class"
         lex = ctx.children[1].symbol.text
         token = ctx.children[1].symbol.type
         line = ctx.children[0].getSymbol().line
@@ -106,6 +111,7 @@ class MyGrammarListener(ParseTreeListener):
     # Enter a parse tree produced by MyGrammarParser#feature.
     def enterFeature(self, ctx:MyGrammarParser.FeatureContext):
         print("entering feature")
+        #print("IM LEFT SYBLING: ",getLeftSibling(ctx))
         #print("mapped list",list(map(lambda x: x.getText(), ctx.children)))
         line = ctx.children[0].getSymbol().line
         column = ctx.children[0].getSymbol().column
@@ -115,12 +121,13 @@ class MyGrammarListener(ParseTreeListener):
         print("lexema: ", ID)
         st2 = self.lt
         if ett.getError() == "":
-            print("insertando feature")
+
             if (self.lt.name == "global"):
                 st2 = ScopeSymbolTable(parentName,self.lt)
 
             st2.insert(ID, [ctx.children[0].symbol.type, line, column, "",0,""])
             self.lt = st2
+            self.propiedad = "feature"
             if st2 not in tableList:
                 tableList.append(st2)
         #print(parentName)
@@ -133,12 +140,8 @@ class MyGrammarListener(ParseTreeListener):
 
     # Exit a parse tree produced by MyGrammarParser#feature.
     def exitFeature(self, ctx:MyGrammarParser.FeatureContext):
-        self.ant += 1
-        line = ctx.children[0].getSymbol().line
-        column = ctx.children[0].getSymbol().column
-        ID = ctx.children[0].getText()
+        print("self:" ,self.lt.name)
         print("exiting feature")
-        print()
         """
         for i in self.lt.symbols.keys():
             print("I: ",i)
@@ -153,7 +156,23 @@ class MyGrammarListener(ParseTreeListener):
 
     # Enter a parse tree produced by MyGrammarParser#formal.
     def enterFormal(self, ctx:MyGrammarParser.FormalContext):
-        self.ant += 1
+        print("entering formal")
+        line = ctx.children[0].getSymbol().line
+        column = ctx.children[0].getSymbol().column
+        ID = ctx.children[0].getText()
+        parentName = ctx.parentCtx.children[0].getText()
+        st3 = self.lt
+        print("parent: ",parentName)
+        if ett.getError() == "":
+            if (self.propiedad == "class" or self.propiedad == "feature"):
+                print("insertando formal: ", self.lt.name)
+                st3 = ScopeSymbolTable(parentName, self.lt)
+            st3.insert(ID, [ctx.children[0].symbol.type, line, column, "", 0, ""])
+            self.lt = st3
+            self.propiedad = "formal"
+            if st3 not in tableList:
+                tableList.append(st3)
+
         #print("hola desde enter Formal: ", self.ant)
         pass
 

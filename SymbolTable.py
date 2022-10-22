@@ -52,6 +52,8 @@ class ScopeSymbolTable:
         print(len(self.children))
         for child in self.children:
             print(child)
+            if len(child.children) > 0:
+                child.print_children()
     def get_parent(self):
         return self.parent
     #scope
