@@ -1,3 +1,6 @@
+from TypeSystem import *
+
+
 class ScopeSymbolTable:
     def __init__(self, name, parent=None):
         self.name = name
@@ -15,14 +18,14 @@ class ScopeSymbolTable:
         ret += "lexema \t semantica \t\t linea \t\t columna" + "\t\t tipo" + "\t\t posicion" + "\t\t herencia" + "\n"
         keys = self.symbols.keys()
         for key in keys:
-            if (self.symbols[key][3] == ""):
+            if self.symbols[key][3] == "":
                 ret += "%s \t\t %s \t\t %s \t\t\t  %s \t\t\t\t %s \t\t\t %s \t\t\t %s   \n" % (
                     key, self.symbols[key][0], self.symbols[key][1], self.symbols[key][2], self.symbols[key][3],
                     self.symbols[key][4], self.symbols[key][5])
             else:
                 ret += "%s \t\t %s \t\t %s \t\t\t  %s \t\t\t %s \t\t %s \t\t\t\t %s   \n" % (
-                key, self.symbols[key][0], self.symbols[key][1], self.symbols[key][2], self.symbols[key][3],
-                self.symbols[key][4], self.symbols[key][5])
+                    key, self.symbols[key][0], self.symbols[key][1], self.symbols[key][2], self.symbols[key][3],
+                    self.symbols[key][4], self.symbols[key][5])
         return ret
 
     # insertar elemento

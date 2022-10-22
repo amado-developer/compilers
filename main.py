@@ -2,6 +2,7 @@ import sys
 from antlr4 import *
 
 import Constants
+from TypeSystem import type_system
 from yapl import *
 from yapl.MyGrammarErrorListener import MyGrammarErrorListener
 
@@ -28,6 +29,7 @@ def main(argv):
     tree = parser.program()
     walker = ParseTreeWalker()
     walker.walk(MyGrammarListener(), tree)
+<<<<<<< HEAD
     # print tableList
     print(st)
     if (st.get_children() != []):
@@ -35,6 +37,13 @@ def main(argv):
 
 
 
+=======
+
+
+    print(st)
+    for table in st.children:
+        print(table)
+>>>>>>> 2d75f99 (Type insertion)
     if ett.getError() == "":
         print("No errors found")
 

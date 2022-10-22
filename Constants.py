@@ -1,10 +1,20 @@
-types = {
+core_types = {
     'INT': 'Int',
     'BOOL': 'Bool',
     'OBJECT': 'Object',
     'STRING': 'String',
     'IO': 'IO',
-    'SELF_TYPE': 'SELF_TYPE'
+    # 'SELF_TYPE': 'SELF_TYPE'
+}
+
+core_scopes = ['Int', 'Bool', 'Object', 'String', 'IO']
+core_scopes_types = {
+    'Int': [],
+    'Bool': [],
+    'Object': ['abort', 'type_name', 'copy'],
+    'String': ['length', 'concat', 'substr'],
+    'IO': ['out_string', 'out_int', 'in_string', 'in_int'],
+    # 'SELF_TYPE': ['abort', 'type_name', 'copy', 'length', 'concat', 'substr', 'out_string', 'out_int', 'in_string', 'in_int']
 }
 
 tokens = {

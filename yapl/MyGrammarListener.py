@@ -48,7 +48,7 @@ class MyGrammarListener(ParseTreeListener):
     def enterProgram(self, ctx:MyGrammarParser.ProgramContext):
 
         self.ant +=1
-
+        type_system.add_core_scopes()
 
         #print("hola desde enter program: ", self.ant)
         pass
@@ -59,19 +59,17 @@ class MyGrammarListener(ParseTreeListener):
         if "Main" not in st.symbols.keys():
             print("ERROR: Class Main does not exist")
             ett.addError("ERROR: Class Main does not exist")
-        pass
+
 
 
     # Enter a parse tree produced by MyGrammarParser#class.
     def enterClass(self, ctx:MyGrammarParser.ClassContext):
-        type_system.test_type(ctx)
         self.ant += 1
         self.propiedad = "class"
         lex = ctx.children[1].symbol.text
         token = ctx.children[1].symbol.type
         line = ctx.children[0].getSymbol().line
         column = ctx.children[0].getSymbol().column
-        element_type = Constants.tokens[ctx.children[0].symbol.type - 1]
         inherits = ""
         clean_error = True
         print("entering class: ", lex)
@@ -103,9 +101,7 @@ class MyGrammarListener(ParseTreeListener):
             if st not in tableList:
                 #print("insertando tabla")
                 tableList.append(st)
-            st.insert(lex, [token, line, column, element_type ,0,inherits])
-        #print("hola desde enter class: ", self.ant)
-
+            st.insert(lex, [token, line, column, "" ,0,inherits])
         pass
 
     # Exit a parse tree produced by MyGrammarParser#class.
@@ -141,8 +137,7 @@ class MyGrammarListener(ParseTreeListener):
         #print("feature ID: ", ID)
         print( Constants.tokens[ctx.children[0].symbol.type - 1])
         self.ant += 1
-
-        ##print("hola desde enter feature: ", self.ant)
+        type_system.evaluate_feature(ctx)
         pass
 
     # Exit a parse tree produced by MyGrammarParser#feature.
