@@ -24,7 +24,7 @@ class ScopeSymbolTable:
                                                                                              self.symbols[key][4],self.symbols[key][5])
         return ret
     #insertar elemento
-    # lexema , semantica, linea, columna, tipo,  posicion, herencia
+    # lexema , semantica, linea, columna, tipo,  posicion, herencia, byte size,tipo semantica, no param,
     def insert(self, name, symbol):
         self.symbols[name] = symbol
     #funcion para encontrar elemento

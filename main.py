@@ -14,7 +14,7 @@ from tableList import *
 
 def main(argv):
     #print(Constants.tokens)
-    file = open("./fibonnacci.yapl")
+    file = open("./silly.yapl")
     code = ""
     for x in file:
         code += x

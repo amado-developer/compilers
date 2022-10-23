@@ -2,7 +2,7 @@ class Silly {
     copy() : SELF_TYPE { self };
 };
 
-class Sally inherits Silly { };
+class Sally inherits Silly {};
 
 class Main {
     x : Silly <- (new Silly).copy();
