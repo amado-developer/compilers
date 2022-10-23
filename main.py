@@ -2,6 +2,7 @@ import sys
 from antlr4 import *
 
 import Constants
+from TypeSystem import type_system
 from yapl import *
 from yapl.MyGrammarErrorListener import MyGrammarErrorListener
 
@@ -33,10 +34,10 @@ def main(argv):
     if (st.get_children() != []):
         st.print_children()
 
-
-
-    if ett.getError() == "":
-        print("No errors found")
+    # for table in st.children:
+    #     print(table)
+    # if ett.getError() == "":
+    #     print("No errors found")
 
 
 if __name__ == '__main__':
