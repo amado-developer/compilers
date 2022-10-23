@@ -15,7 +15,7 @@ from tableList import *
 
 def main(argv):
     #print(Constants.tokens)
-    file = open("./fibonnacci.yapl")
+    file = open("./silly.yapl")
     code = ""
     for x in file:
         code += x
@@ -29,23 +29,15 @@ def main(argv):
     tree = parser.program()
     walker = ParseTreeWalker()
     walker.walk(MyGrammarListener(), tree)
-<<<<<<< HEAD
     # print tableList
     print(st)
     if (st.get_children() != []):
         st.print_children()
 
-
-
-=======
-
-
-    print(st)
-    for table in st.children:
-        print(table)
->>>>>>> 2d75f99 (Type insertion)
-    if ett.getError() == "":
-        print("No errors found")
+    # for table in st.children:
+    #     print(table)
+    # if ett.getError() == "":
+    #     print("No errors found")
 
 
 if __name__ == '__main__':
