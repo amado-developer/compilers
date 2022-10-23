@@ -130,13 +130,14 @@ class MyGrammarListener(ParseTreeListener):
         line = ctx.children[0].getSymbol().line
         column = ctx.children[0].getSymbol().column
 
-
-
         # insertar feature
         parentName = ctx.parentCtx.children[1].getText()
         ID = ctx.children[0].getText()
         print("lexema: ", ID)
         st2 = self.lt
+
+        #Assignment check
+        type_system.check_assignment(ctx)
         if ett.getError() == "":
             if self.lt.name == "global":
                 st2 = ScopeSymbolTable(parentName, self.lt)

@@ -1,6 +1,8 @@
 class Silly {
+    x: Int <- 1;
+    y: Int <- 2;
+    z: Int <- x + y * x /y;
     copy() : SELF_TYPE { self };
-
 };
 
 class Sally inherits Silly { };

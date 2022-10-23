@@ -17,6 +17,8 @@ core_scopes_types = {
     # 'SELF_TYPE': ['abort', 'type_name', 'copy', 'length', 'concat', 'substr', 'out_string', 'out_int', 'in_string', 'in_int']
 }
 
+
+
 tokens = {
     'CLASS': 1,
     'ELSE': 2,
@@ -58,7 +60,7 @@ tokens = {
     'EQUAL': 38,
     'LINE_COMMENT': 39,
     'COMMENT': 40,
-    'INTEGER': 41,
+    'INT': 41,
     'STRING': 42,
     'TYPE': 43,
     'ID': 44,
