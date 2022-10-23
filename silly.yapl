@@ -1,5 +1,6 @@
 class Silly {
     copy() : SELF_TYPE { self };
+
 };
 
 class Sally inherits Silly { };
