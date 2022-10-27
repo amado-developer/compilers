@@ -7,13 +7,14 @@ core_types = {
     # 'SELF_TYPE': 'SELF_TYPE'
 }
 
+byte_sizes = {'Int': 4, 'Bool': 1, 'Object': 75, 'String': 50, 'IO': 100, 'SELF_TYPE': 75}
 core_scopes = ['Int', 'Bool', 'Object', 'String', 'IO']
 core_scopes_types = {
     'Int': [],
     'Bool': [],
-    'Object': ['abort', 'type_name', 'copy'],
-    'String': ['length', 'concat', 'substr'],
-    'IO': ['out_string', 'out_int', 'in_string', 'in_int'],
+    'Object': [('abort', 'Object'), ('type_name', 'String'), ('copy', 'SELF_TYPE')],
+    'String': [('length', 'Int'), ('concat', 'String'), ('substr', 'String')],
+    'IO': [('out_string', 'SELF_TYPE'), ('out_int', 'SELF_TYPE'), ('in_string', 'String'), ('in_int', 'Int')],
     # 'SELF_TYPE': ['abort', 'type_name', 'copy', 'length', 'concat', 'substr', 'out_string', 'out_int', 'in_string', 'in_int']
 }
 

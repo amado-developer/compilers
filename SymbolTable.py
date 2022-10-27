@@ -1,4 +1,5 @@
 from TypeSystem import *
+from prettytable import PrettyTable
 
 
 class ScopeSymbolTable:
@@ -11,23 +12,24 @@ class ScopeSymbolTable:
         if parent:
             self.level = parent.level + 1
             parent.children.append(self)
+        self.table = PrettyTable()
 
     # representa como cadena la tabla de simbolos
     def __str__(self):
         ret = "ScopeSymbolTable(%s) - level: %d\n" % (self.name, self.level)
-        ret += "lexema \t semantica \t\t linea \t\t columna" + "\t\t tipo" + "\t\t posicion" + "\t\t herencia" +  "\t\t byte size" + "\t\t tipo semantica" + "\t\t no param" + "\n"
+
         keys = self.symbols.keys()
+        self.table.field_names = ["lexema", "semantica", "linea", "columna", "tipo", "posicion", "herencia",
+                                  "byte size", "tipo semantica", "no param"]
         for key in keys:
-            if self.symbols[key][3] == "":
-                ret += "  %s \t\t %s \t\t %s \t\t\t  %s \t\t\t\t %s \t\t\t %s \t\t\t %s   \t\t\t %s   \t\t\t %s   \t\t\t %s   \n" % (
-                    key, self.symbols[key][0], self.symbols[key][1], self.symbols[key][2], self.symbols[key][3],
-                    self.symbols[key][4], self.symbols[key][5], self.symbols[key][6], self.symbols[key][7], self.symbols[key][8])
-            else:
-                ret += "  %s \t\t %s \t\t %s \t\t\t  %s \t\t\t %s \t\t %s \t\t\t\t %s   \t\t\t %s   \t\t\t %s   \t\t\t %s   \n" % (
-                    key, self.symbols[key][0], self.symbols[key][1], self.symbols[key][2], self.symbols[key][3],
-                    self.symbols[key][4], self.symbols[key][5], self.symbols[key][6], self.symbols[key][7], self.symbols[key][8])
+            self.table.add_row(
+                [key, self.symbols[key][0], self.symbols[key][1], self.symbols[key][2], self.symbols[key][3],
+                 self.symbols[key][4], self.symbols[key][5], self.symbols[key][6], self.symbols[key][7],
+                 self.symbols[key][8]])
+        ret += str(self.table) + "\n"
         return ret
-    #insertar elemento
+
+    # insertar elemento
     # lexema , semantica, linea, columna, tipo,  posicion, herencia, byte size,tipo semantica, no param,
     def insert(self, name, symbol):
         self.symbols[name] = symbol
@@ -43,6 +45,7 @@ class ScopeSymbolTable:
             if self.parent:
                 symbol = self.parent.lookup(name)
         return symbol
+
     # funcion para encontrar llave en una tabla o en todas las tablas.
     def lookupKey(self, key, current_scope_only=False):
         if key in self.symbols.keys():
@@ -63,12 +66,14 @@ class ScopeSymbolTable:
 
     def get_children(self):
         return self.children
+
     def print_children(self):
         print(len(self.children))
         for child in self.children:
             print(child)
             if len(child.children) > 0:
                 child.print_children()
+
     def get_parent(self):
         return self.parent
 
