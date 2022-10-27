@@ -9,11 +9,24 @@ class TypeSystem:
         # self.symbol_table = SymbolTable()
 
     def add_core_scopes(self):
+        byteSize = 0
+        sem_type = "class"
+        noParam = 0
         for core_scope in core_scopes:
             symbol_table = ScopeSymbolTable(core_scope, st)
-            st.insert(core_scope, [tokens['TYPE'], 0, 0, "", 0, ""])
+            if core_scope == "Int":
+                byteSize = 4
+            if core_scope == "Object":
+                byteSize = 75
+            if core_scope == "Bool":
+                byteSize = 1
+            if core_scope == "String":
+                byteSize = 50
+            if core_scope == "IO":
+                byteSize = 100
+            st.insert(core_scope, [tokens['TYPE'], 0, 0, "", 0, "", byteSize, sem_type, noParam])
             for core_scopes_type in core_scopes_types[core_scope]:
-                symbol_table.insert(core_scopes_type, [tokens['TYPE'], 0, 0, "", 0, ""])
+                symbol_table.insert(core_scopes_type, [tokens['TYPE'], 0, 0, "", 0, "", byteSize, sem_type, noParam])
 
 
 

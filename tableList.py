@@ -2,3 +2,4 @@
 tableList = []
 i = 0
 lTable = None
+memPos = 0
