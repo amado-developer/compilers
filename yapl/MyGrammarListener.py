@@ -8,14 +8,13 @@ if __name__ is not None and "." in __name__:
     from .MyGrammarParser import MyGrammarParser
 else:
     from MyGrammarParser import MyGrammarParser
-
 from Errors import ett
 from SymbolTable import *
 from tableList import *
 
 
 # tabla de simbolos
-# lexema , semantica, linea, columna, tipo,  posicion, herencia,
+# lexema , semantica, linea, columna, tipo,  posicion, herencia, byte size,tipo semantica, no param
 
 def getNodeIndex(node):
     if (node.parentCtx == None or node == None):
@@ -81,6 +80,9 @@ class MyGrammarListener(ParseTreeListener):
         line = ctx.children[0].getSymbol().line
         column = ctx.children[0].getSymbol().column
         inherits = ""
+        byteSize = 0
+        sem_type = "class"
+        noParam = 0
         clean_error = True
         print("entering class: ", lex)
         # check Lex existance
@@ -109,12 +111,12 @@ class MyGrammarListener(ParseTreeListener):
                 break
 
         if clean_error:
-            st.insert(lex, [token, line, column, "", 0, inherits])
+            st.insert(lex, [token, line, column, "", 0, inherits, byteSize, sem_type, noParam])
             self.lt = st
             if st not in tableList:
                 # print("insertando tabla")
                 tableList.append(st)
-            st.insert(lex, [token, line, column, "", 0, inherits])
+            #st.insert(lex, [token, line, column, "", 0, inherits, byteSize, sem_type, noParam])
         pass
 
     # Exit a parse tree produced by MyGrammarParser#class.
@@ -129,7 +131,9 @@ class MyGrammarListener(ParseTreeListener):
         # print("mapped list",list(map(lambda x: x.getText(), ctx.children)))
         line = ctx.children[0].getSymbol().line
         column = ctx.children[0].getSymbol().column
-
+        byteSize = 0
+        sem_type = "null"
+        noParam = 0
 
 
         # insertar feature
@@ -141,18 +145,19 @@ class MyGrammarListener(ParseTreeListener):
             if self.lt.name == "global":
                 st2 = ScopeSymbolTable(parentName, self.lt)
                 # Amado - Self Insertion
-                st2.insert("self", [44, line, column, parentName, 0, ""])
+                st2.insert("self", [44, line, column, parentName, 0, "", byteSize, "reference", noParam]) #sem_type
 
             # Type insertion - Amado
             type_ = ""
             for child in ctx.children:
                 if child.getText() == ":":
                     type_ = ctx.children[ctx.children.index(child) + 1].getText()
+                    sem_type = "Reference"
                     if type_ == "SELF_TYPE":
                         type_ = parentName
                     break
             #--------------------------------------------
-            st2.insert(ID, [ctx.children[0].symbol.type, line, column, type_, 0, ""])
+            st2.insert(ID, [ctx.children[0].symbol.type, line, column, type_, 0, "",byteSize,sem_type,noParam])
             self.lt = st2
             self.propiedad = "feature"
             if st2 not in tableList:
@@ -187,7 +192,15 @@ class MyGrammarListener(ParseTreeListener):
         ID = ctx.children[0].getText()
         parentName = ctx.parentCtx.children[0].getText()
         st3 = self.lt
-        print("parent: ", parentName)
+        byteSize = 0
+        sem_type = "null"
+        noParam = 1
+        print("ctx Children: ", ctx.parentCtx.children[3].getText())
+        print("this is the value: ",st3.lookupKey("fibonnacci"))
+        #get no. of parameters
+        for i in ctx.parentCtx.children:
+            if i.getText() == ",":
+                noParam = noParam + 1
         if ett.getError() == "":
             if self.propiedad == "class" or self.propiedad == "feature":
                 print("insertando formal: ", self.lt.name)
@@ -197,15 +210,21 @@ class MyGrammarListener(ParseTreeListener):
             type_ = ""
             for child in ctx.children:
                 if child.getText() == ":":
-                    type_ = ctx.children[ctx.children.index(child) + 1].getText()
+                    type_ = ctx.children[ctx.children.index(child) + 1].getText() #revisar existencias del feature
+                    if st3.lookupKey(type_) == True:
+                        pass
+                    else:
+                        print("ERROR: Type " + type_ + " does not exist in line " + str(line) + " column " + str(column))
+                        ett.addError("ERROR: Type " + type_ + " does not exist in line " + str(line) + " column " + str(column))
+                    sem_type = "parameter"
+
                     break
             # --------------------------------------------
-            st3.insert(ID, [ctx.children[0].symbol.type, line, column, type_, 0, ""])
+            st3.insert(ID, [ctx.children[0].symbol.type, line, column, type_, 0, "", byteSize,sem_type,noParam])
             self.lt = st3
             self.propiedad = "formal"
             if st3 not in tableList:
                 tableList.append(st3)
-
         # print("hola desde enter Formal: ", self.ant)
         pass
 
