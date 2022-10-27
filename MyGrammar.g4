@@ -19,8 +19,8 @@ ISVOID: 'isvoid' | 'ISVOID';
 
 LOOP: 'loop' | 'LOOP';
 
-POOL: 'pool' | 'POOL';
 
+POOL: 'pool' | 'POOL';
 THEN: 'then' | 'THEN';
 
 WHILE: 'while' | 'WHILE';

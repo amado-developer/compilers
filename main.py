@@ -1,5 +1,8 @@
 import sys
 from antlr4 import *
+
+import Constants
+from TypeSystem import type_system
 from yapl import *
 from yapl.MyGrammarErrorListener import MyGrammarErrorListener
 
@@ -8,7 +11,10 @@ from yapl.MyGrammarListener import MyGrammarListener
 from yapl.MyGrammarParser import MyGrammarParser
 from SymbolTable import st
 from Errors import ett
+from tableList import *
+
 def main(argv):
+    #print(Constants.tokens)
     file = open("./silly.yapl")
     code = ""
     for x in file:
@@ -23,9 +29,16 @@ def main(argv):
     tree = parser.program()
     walker = ParseTreeWalker()
     walker.walk(MyGrammarListener(), tree)
+    # print tableList
     print(st)
-    if(ett.getError() == ""):
-        print("No errors found")
+    if (st.get_children() != []):
+        st.print_children()
+
+    # for table in st.children:
+    #     print(table)
+    # if ett.getError() == "":
+    #     print("No errors found")
+
 
 if __name__ == '__main__':
     main(sys.argv)
