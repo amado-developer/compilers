@@ -195,12 +195,18 @@ class MyGrammarListener(ParseTreeListener):
         byteSize = 0
         sem_type = "null"
         noParam = 1
-        print("ctx Children: ", ctx.parentCtx.children[3].getText())
-        print("this is the value: ",st3.lookupKey("fibonnacci"))
+
         #get no. of parameters
         for i in ctx.parentCtx.children:
             if i.getText() == ",":
                 noParam = noParam + 1
+
+        #inserting param number in parent
+        if parentName in st3.parent.symbols.keys():
+            print("I FOUND IT: ",parentName)
+            print("this is the value: ",st3.lookupKey("fibonnacci"))
+            st3.parent.insert(parentName, [ctx.parentCtx.children[0].symbol.type, line, column, "", 0, "", byteSize, sem_type, noParam])
+
         if ett.getError() == "":
             if self.propiedad == "class" or self.propiedad == "feature":
                 print("insertando formal: ", self.lt.name)
@@ -220,7 +226,7 @@ class MyGrammarListener(ParseTreeListener):
 
                     break
             # --------------------------------------------
-            st3.insert(ID, [ctx.children[0].symbol.type, line, column, type_, 0, "", byteSize,sem_type,noParam])
+            st3.insert(ID, [ctx.children[0].symbol.type, line, column, type_, 0, "", byteSize,sem_type,0])
             self.lt = st3
             self.propiedad = "formal"
             if st3 not in tableList:
