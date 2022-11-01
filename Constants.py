@@ -18,6 +18,8 @@ core_scopes_types = {
     # 'SELF_TYPE': ['abort', 'type_name', 'copy', 'length', 'concat', 'substr', 'out_string', 'out_int', 'in_string', 'in_int']
 }
 
+operands = ['+', '-', '*', '/']
+
 tokens = {
     'CLASS': 1,
     'ELSE': 2,

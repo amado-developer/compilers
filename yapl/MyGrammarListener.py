@@ -141,6 +141,10 @@ class MyGrammarListener(ParseTreeListener):
         ID = ctx.children[0].getText()
         print("lexema: ", ID)
         st2 = self.lt
+
+        #Assignment check
+        type_system.check_assignment(ctx)
+
         if ett.getError() == "":
             if self.lt.name == "global":
                 st2 = ScopeSymbolTable(parentName, self.lt)
