@@ -11,7 +11,7 @@ from yapl.MyGrammarListener import MyGrammarListener
 from yapl.MyGrammarParser import MyGrammarParser
 from SymbolTable import st
 from Errors import ett
-from tableList import *
+from globalVariables import *
 
 def main(argv):
     #print(Constants.tokens)

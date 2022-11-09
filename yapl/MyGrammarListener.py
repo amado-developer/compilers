@@ -2,6 +2,8 @@
 from antlr4 import *
 
 import Constants
+import globalVariables
+
 from TypeSystem import type_system
 
 if __name__ is not None and "." in __name__:
@@ -10,11 +12,14 @@ else:
     from MyGrammarParser import MyGrammarParser
 from Errors import ett
 from SymbolTable import *
-from tableList import *
+from globalVariables import *
+
 
 
 # tabla de simbolos
 # lexema , semantica, linea, columna, tipo,  posicion, herencia, byte size,tipo semantica, no param
+
+
 
 def getNodeIndex(node):
     if (node.parentCtx == None or node == None):
@@ -111,7 +116,7 @@ class MyGrammarListener(ParseTreeListener):
                 break
 
         if clean_error:
-            st.insert(lex, [token, line, column, "", 0, inherits, byteSize, sem_type, noParam])
+            st.insert(lex, [token, line, column, "", globalVariables.memPos, inherits, byteSize, sem_type, noParam])
             self.lt = st
             if st not in tableList:
                 # print("insertando tabla")
@@ -149,7 +154,7 @@ class MyGrammarListener(ParseTreeListener):
             if self.lt.name == "global":
                 st2 = ScopeSymbolTable(parentName, self.lt)
                 # Amado - Self Insertion
-                st2.insert("self", [44, line, column, parentName, 0, "", byteSize, "reference", noParam]) #sem_type
+                st2.insert("self", [44, line, column, parentName, globalVariables.memPos, "", byteSize, "reference", noParam]) #sem_type
 
             # Type insertion - Amado
             type_ = ""
@@ -161,7 +166,21 @@ class MyGrammarListener(ParseTreeListener):
                         type_ = parentName
                     break
             #--------------------------------------------
-            st2.insert(ID, [ctx.children[0].symbol.type, line, column, type_, 0, "",byteSize,sem_type,noParam])
+            #define byteSize
+            if type_ == "Int":
+                byteSize = 4
+            elif type_ == "Bool":
+                byteSize = 1
+            elif type_ == "String":
+                byteSize = 50
+            elif type_ == "SELF_TYPE" or st2.lookup(type_):
+                byteSize = 100
+            elif type_ == "Object":
+                byteSize = 75
+            elif type_ == "IO":
+                byteSize = 100
+
+            st2.insert(ID, [ctx.children[0].symbol.type, line, column, type_, globalVariables.memPos, "",byteSize,sem_type,noParam])
             self.lt = st2
             self.propiedad = "feature"
             if st2 not in tableList:
@@ -169,7 +188,7 @@ class MyGrammarListener(ParseTreeListener):
         # print(parentName)
         # print("tabla padre: ",getTable(parentName,tableList))
         # print("feature ID: ", ID)
-
+        globalVariables.memPos = globalVariables.memPos + byteSize
         self.ant += 1
 
     # Exit a parse tree produced by MyGrammarParser#feature.
@@ -207,9 +226,13 @@ class MyGrammarListener(ParseTreeListener):
 
         #inserting param number in parent
         if parentName in st3.parent.symbols.keys():
-            print("I FOUND IT: ",parentName)
-            print("this is the value: ",st3.lookupKey("fibonnacci"))
-            st3.parent.insert(parentName, [ctx.parentCtx.children[0].symbol.type, line, column, "", 0, "", byteSize, sem_type, noParam])
+            #print("I FOUND IT: ",parentName)
+            #print("this is the value: ",st3.lookupKey("fibonnacci"))
+
+            #get parent current attributes
+            parent = st3.parent.symbols[parentName]
+            parent[8] = noParam
+            st3.parent.insert(parentName, parent)
 
         if ett.getError() == "":
             if self.propiedad == "class" or self.propiedad == "feature":
@@ -229,13 +252,27 @@ class MyGrammarListener(ParseTreeListener):
                     sem_type = "parameter"
 
                     break
+            #--------------------------------------------  BYTE SIZE
+            if type_ == "Int":
+                byteSize = 4
+            elif type_ == "Bool":
+                byteSize = 1
+            elif type_ == "String":
+                byteSize = 50
+            elif type_ == "SELF_TYPE" or st3.lookup(type_):
+                byteSize = 100
+            elif type_ == "Object":
+                byteSize = 75
+            elif type_ == "IO":
+                byteSize = 100
             # --------------------------------------------
-            st3.insert(ID, [ctx.children[0].symbol.type, line, column, type_, 0, "", byteSize,sem_type,0])
+            st3.insert(ID, [ctx.children[0].symbol.type, line, column, type_, globalVariables.memPos, "", byteSize,sem_type,0])
             self.lt = st3
             self.propiedad = "formal"
             if st3 not in tableList:
                 tableList.append(st3)
         # print("hola desde enter Formal: ", self.ant)
+        globalVariables.memPos = globalVariables.memPos + byteSize
         pass
 
     # Exit a parse tree produced by MyGrammarParser#formal.
