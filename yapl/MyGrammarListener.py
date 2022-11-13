@@ -225,7 +225,7 @@ class MyGrammarListener(ParseTreeListener):
                 noParam = noParam + 1
 
         #inserting param number in parent
-        if parentName in st3.parent.symbols.keys():
+        if hasattr(st3.parent,"symbols") and  parentName in st3.parent.symbols.keys():
             #print("I FOUND IT: ",parentName)
             #print("this is the value: ",st3.lookupKey("fibonnacci"))
 

@@ -55,7 +55,15 @@ class TypeSystem:
             if isinstance(child, MyGrammarParser.ExprContext):
                 self.get_children(child, arr, ctx)
             else:
-                arr.append(child.getText())
+                if child.symbol.type != 41:
+                    print("ERROR: Invalid Arithmetic operation in " + str(ctx.children[0].getSymbol().line)
+                          + " column " + str(ctx.children[0].getSymbol().column))
+                    ett.addError(
+                        "ERROR: Invalid Arithmetic operation in  " + str(ctx.children[0].getSymbol().line)
+                        + " column " + str(ctx.children[0].getSymbol().column))
+                    return
+                else:
+                    arr.append(child.getText())
 
         is_previous_operand = False
         for element in arr:

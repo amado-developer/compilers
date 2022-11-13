@@ -1,5 +1,5 @@
 class Silly {
-    test: Int <- 1 + 2;
+    test: Int <- Silly + Silly;
     a: Int <- 3;
     copy() : SELF_TYPE { self };
 
