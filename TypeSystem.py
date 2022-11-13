@@ -15,9 +15,20 @@ class TypeSystem:
         for core_scope in core_scopes:
             symbol_table = ScopeSymbolTable(core_scope, st)
             st.insert(core_scope, [tokens['TYPE'], 0, 0, "", globalVariables.memPos, "", byte_sizes[core_scope], "class", 0])
+            if core_scope == "Int":
+                globalVariables.memPos += 4
+            elif core_scope == "Bool":
+                globalVariables.memPos += 1
             for core_scopes_type in core_scopes_types[core_scope]:
                 symbol_table.insert(core_scopes_type[0], [tokens['TYPE'], 0, 0, core_scopes_type[1], globalVariables.memPos, "",
                                                           byte_sizes[core_scopes_type[1]], "class", 0])
+                if core_scope == "String":
+                    globalVariables.memPos += 50
+                elif core_scope == "Object":
+                    globalVariables.memPos += 75
+                elif core_scope == "IO":
+                    globalVariables.memPos += 100
+
 
     def get_children(self, child, arr, ctx):
         token_keys = list(tokens.keys())
