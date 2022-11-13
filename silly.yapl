@@ -1,5 +1,6 @@
 class Silly {
-    test: Int <- 1 + 2 * 3;
+    test: Int <- 1 + 2;
+    a: Int <- 3;
     copy() : SELF_TYPE { self };
 
 };
