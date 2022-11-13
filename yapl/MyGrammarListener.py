@@ -193,7 +193,7 @@ class MyGrammarListener(ParseTreeListener):
 
     # Exit a parse tree produced by MyGrammarParser#feature.
     def exitFeature(self, ctx: MyGrammarParser.FeatureContext):
-        print("self:", self.lt.name)
+
         print("exiting feature")
         """
         for i in self.lt.symbols.keys():

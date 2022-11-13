@@ -1,8 +1,6 @@
-class Silly {
-    test: Int <- Silly + Silly;
+class Silly{
     a: Int <- 3;
     copy() : SELF_TYPE { self };
-
 };
 
 class Sally inherits Silly {};

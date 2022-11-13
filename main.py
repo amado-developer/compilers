@@ -15,7 +15,7 @@ from globalVariables import *
 
 def main(argv):
     #print(Constants.tokens)
-    file = open("./silly.yapl")
+    file = open("./fibonnacci.yapl")
     code = ""
     for x in file:
         code += x
